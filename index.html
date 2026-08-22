@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>29 Card Game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div id="app">
+
+    <header class="topbar">
+      <div>
+        <h1>29</h1>
+        <span id="gameStatus">Game Ready</span>
+      </div>
+
+      <div class="scoreboard">
+        <div>
+          <small>Team A</small>
+          <strong id="teamAScore">0</strong>
+        </div>
+
+        <div>
+          <small>Team B</small>
+          <strong id="teamBScore">0</strong>
+        </div>
+      </div>
+    </header>
+
+
+    <main>
+
+      <!-- GAME INFO -->
+
+      <section class="info-panel">
+
+        <div>
+          <span>Dealer</span>
+          <strong id="dealerText">Player 1</strong>
+        </div>
+
+        <div>
+          <span>Bid Starter</span>
+          <strong id="bidStarterText">Player 2</strong>
+        </div>
+
+        <div>
+          <span>Current Bid</span>
+          <strong id="currentBidText">-</strong>
+        </div>
+
+        <div>
+          <span>Bid Winner</span>
+          <strong id="bidWinnerText">-</strong>
+        </div>
+
+        <div>
+          <span>Trump</span>
+          <strong id="trumpText">Hidden</strong>
+        </div>
+
+        <div>
+          <span>Trick</span>
+          <strong id="trickText">0 / 8</strong>
+        </div>
+
+      </section>
+
+
+      <!-- CURRENT TRICK -->
+
+      <section class="table">
+
+        <div class="player-position north">
+          <div class="player-name" id="player2Name">Player 2</div>
+          <div class="played-card" id="played2"></div>
+        </div>
+
+        <div class="player-position west">
+          <div class="player-name" id="player3Name">Player 3</div>
+          <div class="played-card" id="played3"></div>
+        </div>
+
+        <div class="center-table">
+
+          <div id="turnMessage" class="turn-message">
+            Starting game...
+          </div>
+
+          <div class="trick-cards">
+
+            <div id="played1"></div>
+
+            <div id="played4"></div>
+
+          </div>
+
+        </div>
+
+        <div class="player-position east">
+          <div class="player-name" id="player1Name">Player 1</div>
+          <div class="played-card" id="played1Side"></div>
+        </div>
+
+        <div class="player-position south">
+
+          <div class="player-name" id="player4Name">
+            Player 4
+          </div>
+
+          <div class="played-card" id="played4Side"></div>
+
+        </div>
+
+      </section>
+
+
+      <!-- BIDDING -->
+
+      <section id="biddingPanel" class="action-panel hidden">
+
+        <h2>Bidding</h2>
+
+        <p id="biddingPlayerText"></p>
+
+        <div class="bid-controls">
+
+          <input
+            id="bidInput"
+            type="number"
+            min="16"
+            max="28"
+            placeholder="Bid"
+          >
+
+          <button id="bidButton">
+            BID
+          </button>
+
+          <button id="passButton">
+            PASS
+          </button>
+
+        </div>
+
+        <div id="bidMessage" class="message"></div>
+
+      </section>
+
+
+      <!-- TRUMP SELECTION -->
+
+      <section id="trumpPanel" class="action-panel hidden">
+
+        <h2>Select Trump</h2>
+
+        <p id="trumpPlayerText"></p>
+
+        <div class="suit-buttons">
+
+          <button data-suit="hearts">♥</button>
+          <button data-suit="diamonds">♦</button>
+          <button data-suit="clubs">♣</button>
+          <button data-suit="spades">♠</button>
+
+        </div>
+
+      </section>
+
+
+      <!-- TRUMP SHOW -->
+
+      <section id="trumpShowPanel" class="action-panel hidden">
+
+        <h2>Trump Action</h2>
+
+        <p>
+          You don't have the lead suit.
+        </p>
+
+        <button id="showTrumpButton" class="primary">
+          SHOW TRUMP
+        </button>
+
+        <button id="discardButton">
+          PLAY ANOTHER CARD
+        </button>
+
+      </section>
+
+
+      <!-- HAND -->
+
+      <section class="hand-section">
+
+        <div class="hand-header">
+
+          <h2 id="currentPlayerTitle">
+            Player 1
+          </h2>
+
+          <span id="handInstruction">
+            Waiting...
+          </span>
+
+        </div>
+
+        <div id="playerHand" class="cards"></div>
+
+      </section>
+
+
+      <!-- MESSAGE -->
+
+      <div id="globalMessage" class="global-message"></div>
+
+
+      <!-- START -->
+
+      <section id="startPanel" class="start-panel">
+
+        <h2>29 Card Game</h2>
+
+        <p>
+          Four-player local prototype
+        </p>
+
+        <button id="startButton" class="primary large">
+          START GAME
+        </button>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <script src="app.js"></script>
+
+</body>
+          </html>
