@@ -309,7 +309,8 @@ function startNewHand() {
   game.trumpSuit = null;
   game.trumpRevealed = false;
   game.trumpSelectionPlayer = null;
-
+  game.marriage = null;
+  game.effectiveBid = null;
   game.leadPlayer = null;
   game.currentTurn = null;
   game.leadSuit = null;
@@ -1263,8 +1264,11 @@ async function finishHand() {
       ? teamAPoints
       : teamBPoints;
 
-  const success =
-    bidderPoints >= game.currentBid;
+ const targetBid =
+  game.effectiveBid ?? game.currentBid;
+
+ const success =
+  bidderPoints >= targetBid;
 
   /*
     Zero-sum scoring:
