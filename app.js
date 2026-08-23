@@ -144,6 +144,9 @@ const game = {
   trumpRevealed: false,
 
   trumpSelectionPlayer: null,
+  marriage: null,
+
+  effectiveBid: null,
 
   leadPlayer: null,
 
@@ -839,7 +842,7 @@ function showTrump() {
   */
 
   game.trumpRevealed = true;
-
+  checkMarriage();
   const player = game.players[playerIndex];
 
   const trumpCards = player.hand.filter(
@@ -878,7 +881,90 @@ function showTrump() {
   );
 
 }
+function checkMarriage() {
 
+  // Trump reveal না হলে Marriage check করার দরকার নেই
+  if (!game.trumpRevealed || !game.trumpSuit) {
+    return;
+  }
+
+  // প্রথমে কোনো Marriage আছে কিনা খুঁজবো
+  let marriagePlayer = null;
+
+  for (const player of game.players) {
+
+    const hasKing = player.hand.some(card =>
+      card.suit === game.trumpSuit &&
+      card.rank === "K"
+    );
+
+    const hasQueen = player.hand.some(card =>
+      card.suit === game.trumpSuit &&
+      card.rank === "Q"
+    );
+
+    // একই player's হাতে Trump King + Queen
+    if (hasKing && hasQueen) {
+      marriagePlayer = player;
+      break;
+    }
+  }
+
+  // Marriage নেই
+  if (!marriagePlayer) {
+
+    game.marriage = null;
+
+    game.effectiveBid = game.currentBid;
+
+    return;
+  }
+
+  // Bid Winner কোন team-এর
+  const bidderTeam =
+    game.players[game.highestBidder].team;
+
+  // Marriage কোন team-এর
+  const marriageTeam =
+    marriagePlayer.team;
+
+  // Bid Winner-এর team-এ Marriage
+  if (marriageTeam === bidderTeam) {
+
+    game.effectiveBid = Math.max(
+      16,
+      game.currentBid - 4
+    );
+
+    game.marriage = {
+      team: marriageTeam,
+      type: "bidder",
+      amount: -4
+    };
+
+    showMessage(
+      `💍 MARRIAGE! Bid ${game.currentBid} → ${game.effectiveBid}`
+    );
+
+  }
+
+  // Opponent team-এ Marriage
+  else {
+
+    game.effectiveBid =
+      game.currentBid + 4;
+
+    game.marriage = {
+      team: marriageTeam,
+      type: "opponent",
+      amount: 4
+    };
+
+    showMessage(
+      `💍 MARRIAGE! Bid ${game.currentBid} → ${game.effectiveBid}`
+    );
+  }
+      }
 
 /* =========================================================
    PLAY TRUMP AFTER SHOW
