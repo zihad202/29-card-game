@@ -1148,6 +1148,7 @@ for (const card of winningCards) {
 const winningTeam = getTeam(winner);
 
 game.trickPoints[winningTeam] += trickPointTotal;
+  updateUI();
   /*
     Add all four cards to winner's team's capture pile.
 
@@ -1401,7 +1402,8 @@ function updateUI() {
 
   $("teamAScore").textContent = game.teamScore.A;
   $("teamBScore").textContent = game.teamScore.B;
-
+$("trickScoreA").textContent = game.trickPoints.A;
+$("trickScoreB").textContent = game.trickPoints.B;
   $("dealerText").textContent =
     getPlayerName(game.dealer);
 
