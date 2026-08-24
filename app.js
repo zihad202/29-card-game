@@ -136,9 +136,9 @@ const game = {
   highestBidder: null,
 
   biddingTurn: null,
-
+  biddingOpponent: null,
   passedPlayers: new Set(),
-
+  
   trumpSuit: null,
 
   trumpRevealed: false,
@@ -307,6 +307,7 @@ function startNewHand() {
   game.currentBid = null;
   game.highestBidder = null;
   game.biddingTurn = null;
+  game.biddingOpponent = null;
   game.passedPlayers = new Set();
 
   game.trumpSuit = null;
@@ -436,12 +437,17 @@ function submitBid() {
       Every new bid must be higher.
     */
 
-    if (value <= game.currentBid) {
+   if (
+  value < game.currentBid ||
+  value > MAX_BID
+) {
 
-      showMessage(`Bid must be higher than ${game.currentBid}.`);
+  showMessage(
+    `Bid must be at least ${game.currentBid}.`
+  );
 
-      return;
-    }
+  return;
+   } 
 
     if (value > MAX_BID) {
 
@@ -505,21 +511,15 @@ function submitPass() {
 function moveBiddingTurn() {
 
   /*
-    If every player except the highest bidder has passed,
-    bidding ends.
+    The current highest bidder continues
+    against the next active player.
   */
 
-  if (
-    game.currentBid !== null &&
-    game.passedPlayers.size >= 3
-  ) {
-
-    finishBidding();
-
+  if (game.highestBidder === null) {
     return;
   }
 
-  let next = nextPlayer(game.biddingTurn);
+  let next = nextPlayer(game.highestBidder);
 
   /*
     Skip players who have already passed.
@@ -533,19 +533,16 @@ function moveBiddingTurn() {
   ) {
 
     next = nextPlayer(next);
-
     safety++;
 
   }
 
   /*
-    If only highest bidder remains, bidding ends.
+    If no opponent is left,
+    bidding is finished.
   */
 
-  if (
-    game.currentBid !== null &&
-    safety >= 3
-  ) {
+  if (safety >= 3) {
 
     finishBidding();
 
