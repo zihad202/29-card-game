@@ -940,7 +940,7 @@ function checkMarriage() {
       16,
       game.currentBid - 4
     );
-
+   updateUI();
     game.marriage = {
       team: marriageTeam,
       type: "bidder",
@@ -958,7 +958,7 @@ function checkMarriage() {
 
     game.effectiveBid =
       game.currentBid + 4;
-
+   updateUI();
     game.marriage = {
       team: marriageTeam,
       type: "opponent",
@@ -1415,7 +1415,7 @@ $("trickScoreB").textContent = game.trickPoints.B;
     getPlayerName(game.biddingStarter);
 
   $("currentBidText").textContent =
-    game.currentBid ?? "-";
+  game.effectiveBid ?? game.currentBid ?? "-";
 
   $("bidWinnerText").textContent =
     game.highestBidder !== null
