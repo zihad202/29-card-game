@@ -1139,7 +1139,15 @@ async function resolveTrick() {
   const winningCards = game.trickCards.map(
     entry => entry.card
   );
+let trickPointTotal = 0;
 
+for (const card of winningCards) {
+  trickPointTotal += CARD_POINTS[card.rank];
+}
+
+const winningTeam = getTeam(winner);
+
+game.trickPoints[winningTeam] += trickPointTotal;
   /*
     Add all four cards to winner's team's capture pile.
 
