@@ -946,7 +946,7 @@ function checkMarriage() {
       type: "bidder",
       amount: -4
     };
-
+  showMarriageNotification();
     showMessage(
       `💍 MARRIAGE! Bid ${game.currentBid} → ${game.effectiveBid}`
     );
@@ -964,7 +964,7 @@ function checkMarriage() {
       type: "opponent",
       amount: 4
     };
-
+ showMarriageNotification();
     showMessage(
       `💍 MARRIAGE! Bid ${game.currentBid} → ${game.effectiveBid}`
     );
@@ -1899,7 +1899,23 @@ function showMessage(message) {
   globalMessage.textContent = message;
 
 }
+function showMarriageNotification() {
 
+  const notification = $("marriageNotification");
+
+  if (!notification) {
+    return;
+  }
+
+  notification.classList.remove("hidden");
+
+  setTimeout(() => {
+
+    notification.classList.add("hidden");
+
+  }, 1000);
+
+}
 
 /* =========================================================
    EVENT LISTENERS
