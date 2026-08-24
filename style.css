@@ -425,3 +425,26 @@ button.large {
   }
 
   }
+.marriage-notification {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+
+  padding: 18px 30px;
+  border-radius: 14px;
+
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+}
+
+.marriage-notification.hidden {
+  display: none;
+}
