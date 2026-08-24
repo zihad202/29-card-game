@@ -162,7 +162,10 @@ const game = {
     A: 0,
     B: 0
   },
-
+trickPoints: {
+  A: 0,
+  B: 0
+ },
   handNumber: 0,
 
   matchOver: false
@@ -317,7 +320,8 @@ function startNewHand() {
 
   game.trickCards = [];
   game.trickNumber = 0;
-
+  game.trickPoints.A = 0;
+  game.trickPoints.B = 0;
   for (const player of game.players) {
     player.hand = [];
     player.captured = [];
