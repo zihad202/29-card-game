@@ -470,7 +470,7 @@ if (value > MAX_BID) {
 
   return;
 }
-
+  }
   game.currentBid = value;
 
   game.highestBidder = player;
