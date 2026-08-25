@@ -474,7 +474,6 @@ function submitBid() {
 /* =========================================================
    PASS
 ========================================================= */
-
 function submitPass() {
 
   if (game.phase !== "bidding") {
@@ -484,7 +483,8 @@ function submitPass() {
   const player = game.biddingTurn;
 
   /*
-    First bidder cannot pass before anyone has bid.
+    First bidder cannot pass before making
+    the opening bid.
   */
 
   if (
@@ -492,16 +492,70 @@ function submitPass() {
     player === game.biddingStarter
   ) {
 
-    showMessage("The first bidder must make the opening bid.");
+    showMessage(
+      "The first bidder must make the opening bid."
+    );
 
     return;
   }
 
+  /*
+    Current player passes.
+  */
+
   game.passedPlayers.add(player);
 
-  moveBiddingTurn();
+  /*
+    If the current highest bidder passes,
+    the opponent wins this bidding duel.
+  */
 
+  if (player === game.highestBidder) {
+
+    /*
+      The opponent becomes the new highest bidder.
+    */
+
+    game.highestBidder = game.biddingOpponent;
+
+  }
+
+  /*
+    The duel is finished.
+    Move to the next player.
+  */
+
+  const winner = game.highestBidder;
+
+  const nextOpponent = nextPlayer(winner);
+
+  /*
+    If the next opponent is already the winner
+    or has already passed, bidding is finished.
+  */
+
+  if (
+    nextOpponent === winner ||
+    game.passedPlayers.has(nextOpponent)
+  ) {
+
+    finishBidding();
+
+    return;
+  }
+
+  /*
+    Start a new bidding duel:
+    winner ↔ next player
+  */
+
+  game.biddingOpponent = nextOpponent;
+
+  game.biddingTurn = nextOpponent;
+
+  updateUI();
 }
+
 
 
 /* =========================================================
