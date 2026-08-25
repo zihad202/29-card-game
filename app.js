@@ -509,32 +509,47 @@ function submitPass() {
 ========================================================= */
 function moveBiddingTurn() {
 
+  /*
+    Bidding happens between only TWO players at a time.
+
+    Example:
+    P1 ↔ P2
+    Winner ↔ P3
+    Winner ↔ P4
+  */
+
   if (game.highestBidder === null) {
     return;
   }
 
-  // Current highest bidder always continues
-  // against the next active player.
-  let next = nextPlayer(game.highestBidder);
+  /*
+    If there is no current opponent yet,
+    start with the player immediately after
+    the bidding starter.
+  */
 
-  // Skip players who already passed
-  let safety = 0;
+  if (game.biddingOpponent === null) {
 
-  while (
-    game.passedPlayers.has(next) &&
-    safety < 4
-  ) {
-    next = nextPlayer(next);
-    safety++;
+    game.biddingOpponent =
+      nextPlayer(game.biddingStarter);
+
   }
 
-  // No active opponent remains
-  if (safety >= 3) {
-    finishBidding();
-    return;
-  }
+  /*
+    The current highest bidder and the opponent
+    are the two players currently bidding against
+    each other.
+  */
 
-  game.biddingTurn = next;
+  if (game.biddingTurn === game.highestBidder) {
+
+    game.biddingTurn = game.biddingOpponent;
+
+  } else {
+
+    game.biddingTurn = game.highestBidder;
+
+  }
 
   updateUI();
 }
