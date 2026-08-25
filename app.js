@@ -399,15 +399,11 @@ function submitBid() {
   }
 
   const player = game.biddingTurn;
-
   const input = $("bidInput");
-
   const value = Number(input.value);
 
   if (!Number.isInteger(value)) {
-
     showMessage("Enter a valid bid.");
-
     return;
   }
 
@@ -418,61 +414,53 @@ function submitBid() {
   if (game.currentBid === null) {
 
     if (player !== game.biddingStarter) {
-
       showMessage("Invalid bidding state.");
-
       return;
     }
 
     if (value < MIN_BID || value > MAX_BID) {
-
-      showMessage(`First bid must be between ${MIN_BID} and ${MAX_BID}.`);
-
+      showMessage(
+        `First bid must be between ${MIN_BID} and ${MAX_BID}.`
+      );
       return;
     }
 
   } else {
 
     /*
-      Every new bid must be higher.
+      Challenger must bid higher than current bid.
+      Highest bidder may match or raise.
     */
 
-  if (player !== game.highestBidder) {
+    if (player !== game.highestBidder) {
 
-  // Challenger must bid higher
-  if (value <= game.currentBid) {
+      if (value <= game.currentBid) {
+        showMessage(
+          `Bid must be higher than ${game.currentBid}.`
+        );
+        return;
+      }
 
-    showMessage(
-      `Bid must be higher than ${game.currentBid}.`
-    );
+    } else {
 
-    return;
+      if (value < game.currentBid) {
+        showMessage(
+          `Bid must be at least ${game.currentBid}.`
+        );
+        return;
+      }
+
+    }
+
+    if (value > MAX_BID) {
+      showMessage(
+        `Maximum bid is ${MAX_BID}.`
+      );
+      return;
+    }
   }
 
-} else {
-
-  // Current highest bidder may match or raise
-  if (value < game.currentBid) {
-
-    showMessage(
-      `Bid must be at least ${game.currentBid}.`
-    );
-
-    return;
-  }
-}
-
-if (value > MAX_BID) {
-
-  showMessage(
-    `Maximum bid is ${MAX_BID}.`
-  );
-
-  return;
-}
-  }
   game.currentBid = value;
-
   game.highestBidder = player;
 
   game.passedPlayers.delete(player);
@@ -480,7 +468,6 @@ if (value > MAX_BID) {
   input.value = "";
 
   moveBiddingTurn();
-
 }
 
 
