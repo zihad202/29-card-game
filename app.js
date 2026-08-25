@@ -563,23 +563,22 @@ function submitPass() {
 ========================================================= */
 function moveBiddingTurn() {
 
-  /*
-    Bidding happens between only TWO players at a time.
-
-    Example:
-    P1 ↔ P2
-    Winner ↔ P3
-    Winner ↔ P4
-  */
-
   if (game.highestBidder === null) {
     return;
   }
 
   /*
-    If there is no current opponent yet,
-    start with the player immediately after
-    the bidding starter.
+    Keep the bidding duel between:
+    - the current highest bidder
+    - the challenger
+
+    Example:
+
+    P1 bids 16
+    P2 bids 17
+    P1 gets the turn again
+    P1 bids 18
+    P2 gets the turn again
   */
 
   if (game.biddingOpponent === null) {
@@ -590,18 +589,22 @@ function moveBiddingTurn() {
   }
 
   /*
-    The current highest bidder and the opponent
-    are the two players currently bidding against
-    each other.
+    If the current bidder is the challenger,
+    return the turn to the previous highest bidder.
   */
 
-  if (game.biddingTurn === game.highestBidder) {
+  if (game.biddingTurn === game.biddingOpponent) {
 
-    game.biddingTurn = game.biddingOpponent;
+    game.biddingTurn = game.highestBidder;
 
   } else {
 
-    game.biddingTurn = game.highestBidder;
+    /*
+      Current highest bidder just bid.
+      Give the challenger the next turn.
+    */
+
+    game.biddingTurn = game.biddingOpponent;
 
   }
 
