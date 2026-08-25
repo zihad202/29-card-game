@@ -391,6 +391,7 @@ function dealCards(numberEach) {
 /* =========================================================
    BIDDING
 ========================================================= */
+
 function submitBid() {
 
   if (game.phase !== "bidding") {
@@ -407,10 +408,17 @@ function submitBid() {
   }
 
   /*
-    First bidder must start with at least 16.
+    ==========================================
+    FIRST BID
+    ==========================================
   */
 
   if (game.currentBid === null) {
+
+    /*
+      Only bidding starter can make
+      the opening bid.
+    */
 
     if (player !== game.biddingStarter) {
       showMessage("Invalid bidding state.");
@@ -424,88 +432,197 @@ function submitBid() {
       return;
     }
 
-  } else {
-
     /*
-      A challenger must bid higher.
-      The current highest bidder may match or raise.
+      Opening bidder becomes highest bidder.
     */
 
-    if (player !== game.highestBidder) {
+    game.currentBid = value;
+    game.highestBidder = player;
 
-      if (value <= game.currentBid) {
-        showMessage(
-          `Bid must be higher than ${game.currentBid}.`
-        );
-        return;
-      }
+    /*
+      The player immediately after the
+      opening bidder becomes the challenger.
+    */
 
-    } else {
+    game.biddingOpponent = nextPlayer(player);
 
-      if (value < game.currentBid) {
-        showMessage(
-          `Bid must be at least ${game.currentBid}.`
-        );
-        return;
-      }
+    /*
+      Challenger gets the next turn.
+    */
 
-    }
+    game.biddingTurn = game.biddingOpponent;
 
-    if (value > MAX_BID) {
-      showMessage(
-        `Maximum bid is ${MAX_BID}.`
-      );
-      return;
-    }
+    input.value = "";
+
+    updateUI();
+
+    return;
   }
 
+
   /*
-    IMPORTANT:
-    Remember who was the previous highest bidder
-    before changing highestBidder.
+    ==========================================
+    NORMAL BIDDING
+    ==========================================
   */
 
-  const previousHighestBidder = game.highestBidder;
+  /*
+    Only the two players in the current
+    bidding duel are allowed to bid.
+  */
+
+  const highestBidder = game.highestBidder;
+  const opponent = game.biddingOpponent;
+
 
   /*
-    Current player becomes the new highest bidder.
+    Safety check.
+  */
+
+  if (
+    player !== highestBidder &&
+    player !== opponent
+  ) {
+
+    showMessage("Invalid bidding turn.");
+
+    return;
+  }
+
+
+  /*
+    ==========================================
+    IF CURRENT PLAYER IS THE CHALLENGER
+    ==========================================
+  */
+
+  if (player === opponent) {
+
+    /*
+      Challenger must beat the current bid.
+    */
+
+    if (value <= game.currentBid) {
+
+      showMessage(
+        `Bid must be higher than ${game.currentBid}.`
+      );
+
+      return;
+    }
+
+  }
+
+
+  /*
+    ==========================================
+    IF CURRENT PLAYER IS THE HIGHEST BIDDER
+    ==========================================
+  */
+
+  else if (player === highestBidder) {
+
+    /*
+      Highest bidder may match or raise.
+    */
+
+    if (value < game.currentBid) {
+
+      showMessage(
+        `Bid must be at least ${game.currentBid}.`
+      );
+
+      return;
+    }
+
+  }
+
+
+  /*
+    Maximum bid check.
+  */
+
+  if (value > MAX_BID) {
+
+    showMessage(
+      `Maximum bid is ${MAX_BID}.`
+    );
+
+    return;
+  }
+
+
+  /*
+    ==========================================
+    SAVE CURRENT PLAYER
+    ==========================================
+  */
+
+  const previousHighestBidder =
+    game.highestBidder;
+
+
+  /*
+    ==========================================
+    UPDATE BID
+    ==========================================
   */
 
   game.currentBid = value;
+
   game.highestBidder = player;
 
   game.passedPlayers.delete(player);
 
   input.value = "";
 
-  /*
-    First bid:
-      P1 -> P2
 
-    Later bids:
-      P2 -> P1
-      P1 -> P2
-      P2 -> P1
+  /*
+    ==========================================
+    CRITICAL TURN LOGIC
+    ==========================================
+
+    Challenger bids:
+      P1 16
+      P2 17
+      → P1 gets turn
+
+    Highest bidder bids:
+      P1 18
+      → P2 gets turn
+
+    So the turn ALWAYS goes to the
+    other player in the current duel.
   */
 
-  if (previousHighestBidder === null) {
+  if (player === opponent) {
 
-    game.biddingOpponent =
-      nextPlayer(player);
+    /*
+      Challenger just bid.
 
-    game.biddingTurn =
-      game.biddingOpponent;
-
-  } else {
+      Previous highest bidder gets
+      the next chance.
+    */
 
     game.biddingTurn =
       previousHighestBidder;
+
+  } else {
+
+    /*
+      Highest bidder just bid.
+
+      Challenger gets the next chance.
+    */
+
+    game.biddingTurn =
+      opponent;
+
   }
+
 
   updateUI();
 }
-
-
 
 /* =========================================================
    PASS
@@ -597,55 +714,7 @@ function submitPass() {
 /* =========================================================
    MOVE BIDDING TURN
 ========================================================= */
-function moveBiddingTurn() {
 
-  if (game.highestBidder === null) {
-    return;
-  }
-
-  /*
-    Keep the bidding duel between:
-    - the current highest bidder
-    - the challenger
-
-    Example:
-
-    P1 bids 16
-    P2 bids 17
-    P1 gets the turn again
-    P1 bids 18
-    P2 gets the turn again
-  */
-
-  if (game.biddingOpponent === null) {
-
-    game.biddingOpponent =
-      nextPlayer(game.biddingStarter);
-
-  }
-
-  /*
-    If the current bidder is the challenger,
-    return the turn to the previous highest bidder.
-  */
-
-  if (game.biddingTurn === game.biddingOpponent) {
-
-    game.biddingTurn = game.highestBidder;
-
-  } else {
-
-    /*
-      Current highest bidder just bid.
-      Give the challenger the next turn.
-    */
-
-    game.biddingTurn = game.biddingOpponent;
-
-  }
-
-  updateUI();
-}
 
 
 /* =========================================================
