@@ -391,7 +391,6 @@ function dealCards(numberEach) {
 /* =========================================================
    BIDDING
 ========================================================= */
-
 function submitBid() {
 
   if (game.phase !== "bidding") {
@@ -428,8 +427,8 @@ function submitBid() {
   } else {
 
     /*
-      Challenger must bid higher than current bid.
-      Highest bidder may match or raise.
+      A challenger must bid higher.
+      The current highest bidder may match or raise.
     */
 
     if (player !== game.highestBidder) {
@@ -460,6 +459,18 @@ function submitBid() {
     }
   }
 
+  /*
+    IMPORTANT:
+    Remember who was the previous highest bidder
+    before changing highestBidder.
+  */
+
+  const previousHighestBidder = game.highestBidder;
+
+  /*
+    Current player becomes the new highest bidder.
+  */
+
   game.currentBid = value;
   game.highestBidder = player;
 
@@ -467,8 +478,33 @@ function submitBid() {
 
   input.value = "";
 
-  moveBiddingTurn();
+  /*
+    First bid:
+      P1 -> P2
+
+    Later bids:
+      P2 -> P1
+      P1 -> P2
+      P2 -> P1
+  */
+
+  if (previousHighestBidder === null) {
+
+    game.biddingOpponent =
+      nextPlayer(player);
+
+    game.biddingTurn =
+      game.biddingOpponent;
+
+  } else {
+
+    game.biddingTurn =
+      previousHighestBidder;
+  }
+
+  updateUI();
 }
+
 
 
 /* =========================================================
