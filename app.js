@@ -437,26 +437,39 @@ function submitBid() {
       Every new bid must be higher.
     */
 
-   if (
-  value < game.currentBid ||
-  value > MAX_BID
-) {
+  if (player !== game.highestBidder) {
+
+  // Challenger must bid higher
+  if (value <= game.currentBid) {
+
+    showMessage(
+      `Bid must be higher than ${game.currentBid}.`
+    );
+
+    return;
+  }
+
+} else {
+
+  // Current highest bidder may match or raise
+  if (value < game.currentBid) {
+
+    showMessage(
+      `Bid must be at least ${game.currentBid}.`
+    );
+
+    return;
+  }
+}
+
+if (value > MAX_BID) {
 
   showMessage(
-    `Bid must be at least ${game.currentBid}.`
+    `Maximum bid is ${MAX_BID}.`
   );
 
   return;
-   } 
-
-    if (value > MAX_BID) {
-
-      showMessage(`Maximum bid is ${MAX_BID}.`);
-
-      return;
-    }
-
-  }
+}
 
   game.currentBid = value;
 
@@ -507,52 +520,36 @@ function submitPass() {
 /* =========================================================
    MOVE BIDDING TURN
 ========================================================= */
-
 function moveBiddingTurn() {
-
-  /*
-    The current highest bidder continues
-    against the next active player.
-  */
 
   if (game.highestBidder === null) {
     return;
   }
 
+  // Current highest bidder always continues
+  // against the next active player.
   let next = nextPlayer(game.highestBidder);
 
-  /*
-    Skip players who have already passed.
-  */
-
+  // Skip players who already passed
   let safety = 0;
 
   while (
     game.passedPlayers.has(next) &&
     safety < 4
   ) {
-
     next = nextPlayer(next);
     safety++;
-
   }
 
-  /*
-    If no opponent is left,
-    bidding is finished.
-  */
-
+  // No active opponent remains
   if (safety >= 3) {
-
     finishBidding();
-
     return;
   }
 
   game.biddingTurn = next;
 
   updateUI();
-
 }
 
 
