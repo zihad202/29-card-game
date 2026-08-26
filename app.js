@@ -684,52 +684,6 @@ function submitBid() {
   input.value = "";
 
 
-  /*
-    ==========================================
-    CRITICAL TURN LOGIC
-    ==========================================
-
-    Challenger bids:
-      P1 16
-      P2 17
-      → P1 gets turn
-
-    Highest bidder bids:
-      P1 18
-      → P2 gets turn
-
-    So the turn ALWAYS goes to the
-    other player in the current duel.
-  */
-
-  if (player === opponent) {
-
-    /*
-      Challenger just bid.
-
-      Previous highest bidder gets
-      the next chance.
-    */
-
-    game.biddingTurn =
-      previousHighestBidder;
-
-  } else {
-
-    /*
-      Highest bidder just bid.
-
-      Challenger gets the next chance.
-    */
-
-    game.biddingTurn =
-      opponent;
-
-  }
-
-
-  updateUI();
-}
 
 /* =========================================================
    PASS
