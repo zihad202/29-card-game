@@ -515,129 +515,109 @@ function dealCards(numberEach) {
 /* =========================================================
    BIDDING
 ========================================================= */
-
 function submitBid() {
 
   if (game.phase !== "bidding") {
-
     return;
-
   }
 
-  const player =
-    game.biddingTurn;
-
-  const input =
-    $("bidInput");
-
-  const value =
-    Number(input.value);
-
+  const player = game.biddingTurn;
+  const input = $("bidInput");
+  const value = Number(input.value);
 
   if (!Number.isInteger(value)) {
-
     showMessage("Enter a valid bid.");
-
     return;
-
   }
 
-
-  /* =====================================================
-     FIRST BID
-  ===================================================== */
+  /*
+    ==========================================
+    OPENING BID
+    ==========================================
+  */
 
   if (game.currentBid === null) {
 
-    if (
-      player !== game.biddingStarter
-    ) {
-
-      showMessage(
-        "Invalid bidding state."
-      );
-
+    if (player !== game.biddingStarter) {
+      showMessage("Invalid bidding state.");
       return;
-
     }
 
-
-    if (
-      value < MIN_BID ||
-      value > MAX_BID
-    ) {
-
+    if (value < MIN_BID || value > MAX_BID) {
       showMessage(
         `First bid must be between ${MIN_BID} and ${MAX_BID}.`
       );
-
       return;
-
     }
 
+    /*
+      First player opens the bidding.
+    */
 
     game.currentBid = value;
-
     game.highestBidder = player;
 
-    game.biddingOpponent =
-      nextPlayer(player);
+    /*
+      Next clockwise player challenges
+      the opening bidder.
+    */
 
-    game.biddingTurn =
-      game.biddingOpponent;
+    game.biddingOpponent = nextPlayer(player);
+    game.biddingTurn = game.biddingOpponent;
 
     input.value = "";
 
     updateUI();
 
     return;
-
   }
 
 
-  /* =====================================================
-     CURRENT BIDDING DUEL
-  ===================================================== */
+  /*
+    ==========================================
+    DUEL BIDDING
+    ==========================================
+  */
 
-  const winner =
-    game.highestBidder;
+  const winner = game.highestBidder;
+  const challenger = game.biddingOpponent;
 
-  const challenger =
-    game.biddingOpponent;
 
+  /*
+    Safety check
+  */
 
   if (
     player !== winner &&
     player !== challenger
   ) {
 
-    showMessage(
-      "Invalid bidding turn."
-    );
-
+    showMessage("Invalid bidding turn.");
     return;
-
   }
 
 
-  /* =====================================================
-     CHALLENGER BIDS
-  ===================================================== */
+  /*
+    ==========================================
+    CHALLENGER BIDS
+    ==========================================
+  */
 
   if (player === challenger) {
 
-    if (
-      value <= game.currentBid
-    ) {
+    /*
+      Challenger MUST bid higher than
+      the current bid.
+    */
+
+    if (value <= game.currentBid) {
 
       showMessage(
         `Bid must be higher than ${game.currentBid}.`
       );
 
       return;
-
     }
-
 
     if (value > MAX_BID) {
 
@@ -646,63 +626,50 @@ function submitBid() {
       );
 
       return;
-
     }
 
+    /*
+      Challenger becomes the new
+      temporary highest bidder.
+
+      Previous winner gets another chance.
+    */
 
     game.currentBid = value;
 
-    /*
-      Challenger becomes new highest bidder.
-    */
+    game.highestBidder = challenger;
 
-    game.highestBidder =
-      challenger;
-
-
-    /*
-      Old winner becomes challenger.
-    */
-
-    game.biddingOpponent =
-      winner;
-
-
-    /*
-      Old winner gets another chance.
-    */
-
-    game.biddingTurn =
-      winner;
-
+    game.biddingTurn = winner;
 
     input.value = "";
 
     updateUI();
 
     return;
-
   }
 
 
-  /* =====================================================
-     CURRENT WINNER BIDS
-  ===================================================== */
+  /*
+    ==========================================
+    CURRENT WINNER BIDS
+    ==========================================
+  */
 
   if (player === winner) {
 
-    if (
-      value < game.currentBid
-    ) {
+    /*
+      Winner must also bid higher.
+      Equal bids are NOT allowed.
+    */
+
+    if (value <= game.currentBid) {
 
       showMessage(
-        `Bid must be at least ${game.currentBid}.`
+        `Bid must be higher than ${game.currentBid}.`
       );
 
       return;
-
     }
-
 
     if (value > MAX_BID) {
 
@@ -711,39 +678,28 @@ function submitBid() {
       );
 
       return;
-
     }
 
+    /*
+      Winner keeps the lead.
+
+      Challenger gets the next chance.
+    */
 
     game.currentBid = value;
 
+    game.highestBidder = winner;
 
-    /*
-      Winner stays winner.
-    */
-
-    game.highestBidder =
-      winner;
-
-
-    /*
-      Challenger gets another chance.
-    */
-
-    game.biddingTurn =
-      challenger;
-
+    game.biddingTurn = challenger;
 
     input.value = "";
 
     updateUI();
 
     return;
-
   }
 
-}
-
+} 
 
 /* =========================================================
    PASS
@@ -752,143 +708,157 @@ function submitBid() {
 function submitPass() {
 
   if (game.phase !== "bidding") {
-
     return;
-
   }
 
-  const player =
-    game.biddingTurn;
+  const player = game.biddingTurn;
 
+  /*
+    ==========================================
+    OPENING BID
+    ==========================================
+  */
 
-  /* =====================================================
-     FIRST BIDDER CANNOT PASS
-  ===================================================== */
-
-  if (
-    game.currentBid === null &&
-    player === game.biddingStarter
-  ) {
+  if (game.currentBid === null) {
 
     showMessage(
       "The first bidder must make the opening bid."
     );
 
     return;
-
   }
 
 
-  const winner =
-    game.highestBidder;
-
-  const challenger =
-    game.biddingOpponent;
+  const winner = game.highestBidder;
+  const challenger = game.biddingOpponent;
 
 
-  /* =====================================================
-     CHALLENGER PASSES
-  ===================================================== */
+  /*
+    ==========================================
+    SAFETY CHECK
+    ==========================================
+  */
+
+  if (
+    player !== winner &&
+    player !== challenger
+  ) {
+
+    showMessage("Invalid bidding turn.");
+
+    return;
+  }
+
+
+  /*
+    ==========================================
+    CHALLENGER PASSES
+    ==========================================
+  */
 
   if (player === challenger) {
 
     /*
       Challenger gives up.
 
-      Current winner keeps the contract.
+      Current winner wins this duel.
     */
 
-    const nextOpponent =
+    /*
+      Check whether this was the final player.
+
+      If the challenger is the last player
+      in the clockwise sequence, bidding ends.
+    */
+
+    const nextPlayerAfterWinner =
       nextPlayer(winner);
 
-
     /*
-      If next opponent is already passed,
-      bidding is finished.
+      If next player is the bidding starter,
+      all four players have now had their chance.
     */
 
     if (
-      nextOpponent === winner ||
-      game.passedPlayers.has(nextOpponent)
+      nextPlayerAfterWinner === game.biddingStarter
     ) {
 
       finishBidding();
 
       return;
-
     }
 
 
     /*
-      Challenger has passed.
-    */
-
-    game.passedPlayers.add(
-      challenger
-    );
-
-
-    /*
-      New opponent.
+      Current winner now challenges
+      the next clockwise player.
     */
 
     game.biddingOpponent =
-      nextOpponent;
+      nextPlayerAfterWinner;
 
     game.biddingTurn =
-      nextOpponent;
+      game.biddingOpponent;
 
     updateUI();
 
     return;
-
   }
 
 
-  /* =====================================================
-     CURRENT WINNER PASSES
-  ===================================================== */
+  /*
+    ==========================================
+    CURRENT WINNER PASSES
+    ==========================================
+  */
 
   if (player === winner) {
 
     /*
-      Current winner gives up.
+      Winner gives up.
 
-      Challenger becomes winner.
+      Challenger becomes the new winner.
     */
 
-    game.passedPlayers.add(
-      winner
-    );
+    game.highestBidder = challenger;
 
 
-    game.highestBidder =
-      challenger;
+    /*
+      The player who just passed is now
+      considered finished.
+    */
 
+    game.passedPlayers.add(winner);
+
+
+    /*
+      Next player after the new winner.
+    */
 
     const nextOpponent =
       nextPlayer(challenger);
 
 
     /*
-      If everyone else has passed,
-      bidding ends.
+      If the next player is the original
+      bidding starter, everyone has had
+      their opportunity.
     */
 
     if (
-      nextOpponent === challenger ||
-      game.passedPlayers.has(nextOpponent)
+      nextOpponent === game.biddingStarter
     ) {
 
       finishBidding();
 
       return;
-
     }
 
 
     /*
-      New bidding duel.
+      New duel:
+      
+      New Winner vs Next Player
     */
 
     game.biddingOpponent =
@@ -900,7 +870,6 @@ function submitPass() {
     updateUI();
 
     return;
-
   }
 
 }
